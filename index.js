@@ -1,29 +1,26 @@
-const refs = {
-  days: document.querySelector('.value[data-value ="days"]'),
-  hours: document.querySelector('.value[data-value ="hours"]'),
-  mins: document.querySelector('.value[data-value ="mins"]'),
-  secs: document.querySelector('.value[data-value ="secs"]'),
-};
-
 class CountdownTimer {
-  constructor({ onTick }) {
-    this.selector = '#timer-1';
-    this.targetDate = new Date('Nov 01, 2021');
-    this.onTick = onTick;
+  constructor({ selector, targetDate }) {
+    this.selector = selector;
+    this.targetDate = targetDate;
     this.start();
+    const timer = document.querySelector(this.selector);
+    this.days = timer.querySelector('[data-value ="days"]');
+    this.hours = timer.querySelector('[data-value ="hours"]');
+    this.mins = timer.querySelector('[data-value ="mins"]');
+    this.secs = timer.querySelector('[data-value ="secs"]');
   }
 
   start() {
-    const targetDate = new Date('Nov 01, 2021').getTime();
-
     setInterval(() => {
       const currentTime = Date.now();
-      const partTime = targetDate - currentTime;
-      const time = this.getTimeComponents(partTime);
-      this.onTick(time);
+      const time = this.targetDate - currentTime;
+      this.updateTimerFace(this.getTimeComponents(time));
     }, 1000);
   }
 
+  pad(value) {
+    return String(value).padStart(2, '0');
+  }
   getTimeComponents(time) {
     const days = this.pad(Math.floor(time / (1000 * 60 * 60 * 24)));
     const hours = this.pad(
@@ -34,18 +31,22 @@ class CountdownTimer {
     return { days, hours, mins, secs };
   }
 
-  pad(value) {
-    return String(value).padStart(2, '0');
+  updateTimerFace({ days, hours, mins, secs }) {
+    this.days.textContent = `${days}`;
+    this.hours.textContent = `${hours}`;
+    this.mins.textContent = `${mins}`;
+    this.secs.textContent = `${secs}`;
   }
 }
 
 const timer = new CountdownTimer({
-  onTick: updateTimerFace,
+  selector: '#timer-1',
+  targetDate: new Date('Nov 01, 2021'),
+  //time to new month
 });
 
-function updateTimerFace({ days, hours, mins, secs }) {
-  refs.days.textContent = `${days}`;
-  refs.hours.textContent = `${hours}`;
-  refs.mins.textContent = `${mins}`;
-  refs.secs.textContent = `${secs}`;
-}
+const timer2 = new CountdownTimer({
+  selector: '#timer-2',
+  targetDate: new Date('Jan 01, 2022'),
+  //time to New Year
+});
